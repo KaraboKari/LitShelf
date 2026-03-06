@@ -13,7 +13,7 @@ export const handleLogin = async(req:Request , res: Response) => {
         const isPassswordCorrect = await user.comparePassword(password)
         if(!isPassswordCorrect) return res.status(400).json({message:"Invalid credentials"})
         
-        const token = generateToken(user.id)
+        const token = generateToken(String(user._id))
          res.status(201).json({token,user:{
             id: user._id,
             username: user.username ,

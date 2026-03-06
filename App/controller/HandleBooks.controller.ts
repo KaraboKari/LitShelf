@@ -5,7 +5,7 @@ import cloudinary from '../lib/cloudinary.js'
 
 declare module 'express-serve-static-core' {
   interface Request {
-    user?: any; // Replace `any` with your user type
+    user: { _id: string }; // Replace `any` with your user type
   }
 }
 dotenv.config()
@@ -30,7 +30,7 @@ export const CreateBooks= async(req:Request , res: Response) => {
         res.status(201).json(newBook)
     }catch(err){
         console.log("Error creating book" , err)
-        res.status(500).json({message: "Unable to create abook  " + err})
+        res.status(500).json({message: err})
     }
 }
 

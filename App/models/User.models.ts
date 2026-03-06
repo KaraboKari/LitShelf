@@ -3,10 +3,12 @@ import bcrypt from 'bcrypt';
 
 // 1. Define the "Shape" of a User in the DB
 interface IUser extends Document {
+    _id: mongoose.Types.ObjectId; // MongoDB's unique identifier
     username: string;
     email: string;
     password: string;
     profileImage: string;
+    
     comparePassword(password: string): Promise<boolean>; // Add method here too
 }
 
@@ -18,6 +20,7 @@ interface IUserMethods {
 // 3. Apply types to the Schema
 // The order is: <DocType, ModelType, MethodType>
 const userSchema = new Schema<IUser, {}, IUserMethods>({
+    _id: { type: mongoose.Types.ObjectId, auto: true },
     username: { type: String, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true, minlength: 6 },

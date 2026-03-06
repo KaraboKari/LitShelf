@@ -25,7 +25,7 @@ export const handleNewUser = async(req:Request , res: Response) => {
         })
         await user.save()
 
-        const token = generateToken(user.id)
+        const token = generateToken(String(user._id))
         res.status(201).json({token,user:{
             id: user._id,
             username: user.username ,
@@ -35,12 +35,12 @@ export const handleNewUser = async(req:Request , res: Response) => {
 
     }catch(err){
         console.log("Error in the register controller: ", err)
-        res.status(500).json({message: "Internal server error"})
+        res.status(500).json({message: "Internal server error " + err})
     }
 }
 const generateToken = (userId:number | string) =>{
     return jwt.sign(
-        {userId},
+        {_id:userId},
         process.env.JWT_SECRET as string, 
         {expiresIn: "15d"}
     )
