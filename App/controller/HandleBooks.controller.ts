@@ -30,7 +30,7 @@ export const CreateBooks= async(req:Request , res: Response) => {
         res.status(201).json(newBook)
     }catch(err){
         console.log("Error creating book" , err)
-        res.status(500).json({message: "Unable to create abook"})
+        res.status(500).json({message: "Unable to create abook  " + err})
     }
 }
 
