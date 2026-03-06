@@ -24,7 +24,7 @@ export const handleNewUser = async(req:Request , res: Response) => {
 
         })
         await user.save()
-
+        console.log("New user created: ", user._id)
         const token = generateToken(String(user._id))
         res.status(201).json({token,user:{
             id: user._id,
@@ -40,7 +40,7 @@ export const handleNewUser = async(req:Request , res: Response) => {
 }
 const generateToken = (userId:number | string) =>{
     return jwt.sign(
-        {_id:userId},
+        {userId},
         process.env.JWT_SECRET as string, 
         {expiresIn: "15d"}
     )

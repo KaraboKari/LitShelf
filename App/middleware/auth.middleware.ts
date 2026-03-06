@@ -19,6 +19,7 @@ const protectRoute = async(req: Request , res: Response , next: NextFunction) =>
             
             const userId = (decoded as JwtPayload).userId
             if(!userId) return res.status(401).json({message: "Invalid token , access denied"})
+            console.log("Decoded user ID from token:", userId)
             req.user = userId
             next()
         })
