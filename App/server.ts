@@ -6,7 +6,8 @@ import authRoutes from './routes/auth.routes.js'
 import { connectDB } from './lib/db.js'
 import figlet from 'figlet';
 import booksRoutes from './routes/books.routes.js'
-import job from './lib/cron.js'
+
+
 
 figlet('Server is running!', (err, data) => {
   if (err) {
@@ -22,14 +23,9 @@ dotenv.config()
 const PORT = process.env.PORT || 3000
 const app = express();
 
-job.start()
+
 app.use(express.json())
 app.use(cors())
-
-app.get("/health", (req, res) => {
-  res.status(200).json({ message: "Server is alive" });
-  console.log("Health check received at /health endpoint");
-});
 
 app.use("/api/auth",authRoutes) 
 app.use("/api/books",booksRoutes) 
