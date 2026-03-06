@@ -26,13 +26,26 @@ job.start()
 app.use(express.json())
 app.use(cors())
 
+app.get("/health", (req, res) => {
+  res.status(200).json({ message: "Server is alive" });
+  console.log("Health check received at /health endpoint");
+});
+
 app.use("/api/auth",authRoutes) 
 app.use("/api/books",booksRoutes) 
 
 
 
-app.listen(PORT , ()=> {
-    console.log(`Server running on port ${PORT}`)
-    connectDB()
-})  
+const startServer = async () => {
+  try {
+    await connectDB();
+    app.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    process.exit(1);
+  }
+};
+startServer()
 
