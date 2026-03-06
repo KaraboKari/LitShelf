@@ -17,7 +17,7 @@ export const CreateBooks= async(req:Request , res: Response) => {
         //upload the img to cloudinary and returns the url
         const uploadResponse = await cloudinary.uploader.upload(image)
         const imageUrl = uploadResponse.secure_url 
-        
+        console.log("USERID: ", req.user._id)
         const newBook = new Book({
             title,
             caption,
