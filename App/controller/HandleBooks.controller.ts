@@ -19,7 +19,7 @@ export const CreateBooks= async(req:Request , res: Response) => {
             caption,
             rating,
             image: imageUrl,
-            user: req.user?._id as string
+            user: req.user?._id 
         })
         await newBook.save()
         
