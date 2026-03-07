@@ -14,15 +14,11 @@ const protectRoute = async(req: Request , res: Response , next: NextFunction) =>
         console.log("grabbing the Bearer ... :",authHeader)
         const token = authHeader.split(' ')[1]
         //verify the token
-        jwt.verify(token as string, process.env.JWT_SECRET as string, async(err, decoded) => {
-            if(err) return res.status(401).json({message: "Invalid token , access denied"})
-            
-            const userId = (decoded as JwtPayload).userId
-            if(!userId) return res.status(401).json({message: "Invalid token , access denied"})
-            console.log("Decoded user ID from token:", userId)
-            req.user = userId
-            next()
-        })
+        const decoded = jwt.verify(token as string, process.env.JWT_SECRET as string) as JwtPayload
+        const user = await User.findById(decoded.userId).select('-password') //exclude the password
+        if(!user)return res.status(401).json({message: "User not found , access denied"})
+        req.user = user 
+        next() 
     }catch(err){
         console.error('Error verifying token:', err);
         res.status(401).json({ message: 'Invalid or expired token' });

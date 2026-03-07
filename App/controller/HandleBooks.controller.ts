@@ -2,12 +2,8 @@ import type { Response , Request } from "express";
 import Book from '../models/Book.models.js'
 import dotenv from 'dotenv'
 import cloudinary from '../lib/cloudinary.js'
+import mongoose from 'mongoose'
 
-declare module 'express-serve-static-core' {
-  interface Request {
-    user: { _id: string }; // Replace `any` with your user type
-  }
-}
 dotenv.config()
 export const CreateBooks= async(req:Request , res: Response) => {
     try{
@@ -17,13 +13,13 @@ export const CreateBooks= async(req:Request , res: Response) => {
         //upload the img to cloudinary and returns the url
         const uploadResponse = await cloudinary.uploader.upload(image)
         const imageUrl = uploadResponse.secure_url 
-        console.log("USERID: ", req.user._id)
+        console.log("USERID: ", req.user?._id)
         const newBook = new Book({
             title,
             caption,
             rating,
             image: imageUrl,
-            user: req.user._id
+            user: req.user?._id as string
         })
         await newBook.save()
         
@@ -53,7 +49,7 @@ export const DeleteBook = async(req:Request , res: Response) => {
         const book = await Book.findById(req.params.id)
         if(!book)return res.status(404).json({message: "Book not found"})
         
-        if(book.user.toString() !== req.user._id.toString()) return res.status(403).json({message: "You are not authorized to delete this book"})
+        if(book.user.toString() !== req.user?._id.toString()) return res.status(403).json({message: "You are not authorized to delete this book"})
         //delete the image from cloudinary
         if(book.image && book.image.includes('cloudinary.com')){
             try{
@@ -73,12 +69,18 @@ export const DeleteBook = async(req:Request , res: Response) => {
         res.status(500).json({message: "Unable to delete book"})
     }
 }
-export const GetRecommendedBooks = async(req:Request , res: Response) => {
-    try{
-        const userBooks = await Book.find({user: req.user._id}).sort({createdAt: -1})
-        res.status(200).json(userBooks)
-    }catch(err){
-        console.log("Error fetching recommended books" , err)
-        res.status(500).json({message: "Unable to fetch recommended books"})
+export const GetRecommendedBooks = async (req: Request, res: Response) => {
+  try {
+    if (!req.user?._id) {
+      return res.status(401).json({ message: "Unauthorized" });
     }
-}
+
+    const userId = new mongoose.Types.ObjectId(req.user._id);
+    const userBooks = await Book.find({ user: userId }).sort({ createdAt: -1 });
+
+    res.status(200).json(userBooks);
+  } catch (err) {
+    console.log("Error fetching recommended books", err);
+    res.status(500).json({ message: "Unable to fetch recommended books" });
+  }
+};
